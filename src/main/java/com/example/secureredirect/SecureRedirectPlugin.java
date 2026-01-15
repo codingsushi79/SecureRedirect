@@ -10,10 +10,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.nio.charset.StandardCharsets;
@@ -216,31 +214,19 @@ public class SecureRedirectPlugin extends JavaPlugin implements Listener, Comman
         return Collections.emptyList();
     }
 
-    // -------- Join / login security --------
+    // -------- Join security --------
 
     /**
-     * Block non-transfer connections if require-transfer is true.
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        Player player = event.getPlayer();
-
-        if (isRequireTransfer() && !player.isTransferred()) {
-            event.disallow(
-                    PlayerLoginEvent.Result.KICK_OTHER,
-                    getKickNoTransferMessage()
-            );
-        }
-    }
-
-    /**
-     * For transferred connections, verify the cookie matches receive-hash.
+     * Enforce require-transfer and then, for transferred connections, verify the cookie.
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
         if (!player.isTransferred()) {
+            if (isRequireTransfer()) {
+                kickForNoTransfer(player);
+            }
             return;
         }
 
@@ -290,6 +276,15 @@ public class SecureRedirectPlugin extends JavaPlugin implements Listener, Comman
     private void kickForBadHash(Player player) {
         String message = getKickBadHashMessage();
         // Must run kicks on the main server thread
+        Bukkit.getScheduler().runTask(this, () -> {
+            if (player.isOnline()) {
+                player.kick(Component.text(message));
+            }
+        });
+    }
+
+    private void kickForNoTransfer(Player player) {
+        String message = getKickNoTransferMessage();
         Bukkit.getScheduler().runTask(this, () -> {
             if (player.isOnline()) {
                 player.kick(Component.text(message));
