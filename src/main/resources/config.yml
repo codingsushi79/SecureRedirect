@@ -1,0 +1,12 @@
+target-host: "127.0.0.1"
+target-port: 25566
+
+send-hash: ""
+
+receive-hash: ""
+
+require-transfer: true
+
+kick-no-transfer-message: "You must join this server via secure redirect."
+
+kick-bad-hash-message: "Invalid or missing redirect token."

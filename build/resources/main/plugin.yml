@@ -1,0 +1,28 @@
+name: SecureRedirect
+main: com.example.secureredirect.SecureRedirectPlugin
+version: 1.0.0
+api-version: "1.21"
+description: "Hash-based secure redirect between Paper servers using transfer packets and cookies"
+author: "You"
+
+commands:
+  redirect:
+    description: Redirect yourself or another player, or generate a new send-hash
+    usage: |
+      /redirect              - redirect yourself
+      /redirect <player>     - redirect another player
+      /redirect gen-hash     - generate new send-hash in config.yml
+    permission: secureredirect.redirect
+
+permissions:
+  secureredirect.redirect:
+    description: "Use /redirect on yourself"
+    default: op
+
+  secureredirect.redirect.others:
+    description: "Redirect other players with /redirect <player>"
+    default: op
+
+  secureredirect.genhash:
+    description: "Generate a new send-hash with /redirect gen-hash"
+    default: op
