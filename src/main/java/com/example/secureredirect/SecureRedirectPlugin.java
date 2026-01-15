@@ -48,7 +48,15 @@ public class SecureRedirectPlugin extends JavaPlugin implements Listener, Comman
     }
 
     private int getTargetPort() {
-        return getConfig().getInt("target-port", 25565);
+        // If target-port is not set or invalid, fall back to the default Minecraft port 25565.
+        if (!getConfig().isSet("target-port")) {
+            return 25565;
+        }
+        int port = getConfig().getInt("target-port", 25565);
+        if (port <= 0 || port > 65535) {
+            port = 25565;
+        }
+        return port;
     }
 
     private String getSendHash() {

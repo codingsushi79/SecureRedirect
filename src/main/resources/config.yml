@@ -1,4 +1,5 @@
 target-host: "127.0.0.1"
+# Optional. If omitted or invalid, defaults to 25565.
 target-port: 25566
 
 # Hash that this server SENDS when redirecting players away.
