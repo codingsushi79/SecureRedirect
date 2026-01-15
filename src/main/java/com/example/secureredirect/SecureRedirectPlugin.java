@@ -65,6 +65,17 @@ public class SecureRedirectPlugin extends JavaPlugin implements Listener, Comman
         return getConfig().getBoolean("require-transfer", true);
     }
 
+    private String getOriginId() {
+        // Identifier this server uses when acting as a redirect source.
+        // Defaults to the server name if not set in config.
+        return getConfig().getString("origin-id", getServer().getName());
+    }
+
+    private List<String> getAllowedOrigins() {
+        // If empty, allow any origin that presents the correct receive-hash.
+        return getConfig().getStringList("allowed-origins");
+    }
+
     private String getKickNoTransferMessage() {
         return ChatColor.translateAlternateColorCodes(
                 '&',
@@ -146,10 +157,12 @@ public class SecureRedirectPlugin extends JavaPlugin implements Listener, Comman
             return;
         }
 
-        byte[] tokenBytes = sendHash.getBytes(StandardCharsets.UTF_8);
+        String originId = getOriginId();
+        String payload = originId + ":" + sendHash;
+        byte[] tokenBytes = payload.getBytes(StandardCharsets.UTF_8);
 
         try {
-            // Attach the hash as a cookie on the client
+            // Attach the origin + hash as a cookie on the client
             target.storeCookie(cookieKey, tokenBytes);
         } catch (IllegalStateException ex) {
             initiator.sendMessage(ChatColor.RED + "Could not store redirect token: " + ex.getMessage());
@@ -244,9 +257,32 @@ public class SecureRedirectPlugin extends JavaPlugin implements Listener, Comman
                 return;
             }
 
-            String received = new String(value, StandardCharsets.UTF_8);
-            if (!expected.equals(received)) {
+            String raw = new String(value, StandardCharsets.UTF_8);
+            int sep = raw.indexOf(':');
+            if (sep <= 0 || sep == raw.length() - 1) {
                 kickForBadHash(player);
+                return;
+            }
+
+            String originId = raw.substring(0, sep);
+            String receivedHash = raw.substring(sep + 1);
+
+            if (!expected.equals(receivedHash)) {
+                kickForBadHash(player);
+                return;
+            }
+
+            List<String> allowed = getAllowedOrigins();
+            if (!allowed.isEmpty() && !allowed.contains(originId)) {
+                kickForBadHash(player);
+                return;
+            }
+
+            // Optional: clear the cookie on successful validation to avoid re-use noise.
+            try {
+                player.storeCookie(cookieKey, new byte[0]);
+            } catch (IllegalStateException ignored) {
+                // If we can't clear it, it's not critical.
             }
         });
     }

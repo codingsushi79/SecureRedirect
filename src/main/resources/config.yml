@@ -1,10 +1,21 @@
 target-host: "127.0.0.1"
 target-port: 25566
 
+# Hash that this server SENDS when redirecting players away.
+# Use /redirect gen-hash to regenerate it.
 send-hash: ""
 
+# Hash that this server EXPECTS on incoming transferred connections.
 receive-hash: ""
 
+# Identifier this server uses as an origin when redirecting players.
+origin-id: "default"
+
+# Optional list of allowed origin IDs for incoming transfers.
+# If empty or missing, any origin with the correct receive-hash is accepted.
+allowed-origins: []
+
+# If true, only transferred connections are allowed.
 require-transfer: true
 
 kick-no-transfer-message: "You must join this server via secure redirect."
