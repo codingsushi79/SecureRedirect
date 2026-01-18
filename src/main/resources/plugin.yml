@@ -3,7 +3,7 @@ main: com.example.secureredirect.SecureRedirectPlugin
 version: 1.0.2
 api-version: "1.21"
 description: "Hash-based secure redirect between Paper servers using transfer packets and cookies"
-author: "You"
+author: "Sushi MC"
 
 commands:
   redirect:
