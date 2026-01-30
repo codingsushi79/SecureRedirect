@@ -1,4 +1,4 @@
-package com.example.secureredirect;
+package com.codingushi.secureredirect;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -57,6 +57,10 @@ public class SecureRedirectPlugin extends JavaPlugin implements Listener, Comman
             port = 25565;
         }
         return port;
+    }
+
+    private boolean shouldUseDefaultPort() {
+        return getConfig().getBoolean("use-default-port", false);
     }
 
     private String getSendHash() {
@@ -151,7 +155,7 @@ public class SecureRedirectPlugin extends JavaPlugin implements Listener, Comman
 
     private void redirectPlayer(CommandSender initiator, Player target) {
         String host = getTargetHost();
-        int port = getTargetPort();
+        int port = shouldUseDefaultPort() ? 25565 : getTargetPort();
         String sendHash = getSendHash();
 
         if (host == null || host.isEmpty()) {

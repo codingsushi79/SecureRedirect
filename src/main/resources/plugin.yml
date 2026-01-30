@@ -1,9 +1,9 @@
 name: SecureRedirect
-main: com.example.secureredirect.SecureRedirectPlugin
-version: 1.0.2
+main: com.codingushi.secureredirect.SecureRedirectPlugin
+version: 1.1.0
 api-version: "1.21"
 description: "Hash-based secure redirect between Paper servers using transfer packets and cookies"
-author: "Sushi MC"
+author: "SushiMC"
 
 commands:
   redirect:

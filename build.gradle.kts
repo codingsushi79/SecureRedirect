@@ -2,8 +2,8 @@ plugins {
     java
 }
 
-group = "com.example"
-version = "1.0.3"
+group = "com.codingsushi"
+version = "1.1.0"
 
 repositories {
     mavenCentral()

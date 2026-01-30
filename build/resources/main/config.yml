@@ -9,6 +9,8 @@
 target-host: "127.0.0.1"
 # Optional. If omitted or invalid, defaults to 25565.
 target-port: 25566
+# If true, always use port 25565 for transfers (useful for menu-based joins that don't specify ports)
+use-default-port: false
 
 # Hash that this server SENDS when redirecting players away.
 # Use /redirect gen-hash to regenerate it.
